@@ -10,17 +10,17 @@ namespace Hospital_Management.dao
     public interface IHospitalService
     {
         // Patient-related operations
-        Patient getPatientById(int patientId);
+        Patient getPatientById(int patient_id);
         List<Patient> getAllPatients();
         void addPatient(Patient patient);
         void updatePatient(Patient patient);
-        void deletePatient(int patientId);
+        void deletePatient(int patient_id);
         // Appointment-related operations
-        Appointment getAppointmentById(int appointmentId);
-        List<Appointment> getAppointmentsForPatient(int patientId);
-        List<Appointment> getAppointmentsForDoctor(int doctorId);
+        Appointment getAppointmentById(int appointment_id);
+        List<Appointment> getAppointmentsForPatient(int patient_id);
+        List<Appointment> getAppointmentsForDoctor(int doctor_id);
         void scheduleAppointment(Appointment appointment);
         void updateAppointment(Appointment appointment);
-        void cancelAppointment(int appointmentId);
+        void cancelAppointment(int appointment_id);
     }
 }

@@ -7,8 +7,8 @@ class Program
 {
     static void Main()
     {
-        string connectionString = "your_connection_string_here";
-        IHospitalService hospitalService = new HospitalServiceDao(connectionString);
+        
+        IHospitalService hospitalService = new HospitalServiceDao();
 
         while (true)
         {
@@ -33,9 +33,9 @@ class Program
             {
                 case "1":
                     Console.Write("Enter patient ID: ");
-                    if (int.TryParse(Console.ReadLine(), out int patientId))
+                    if (int.TryParse(Console.ReadLine(), out int patient_id))
                     {
-                        Patient patient = hospitalService.getPatientById(patientId);
+                        Patient patient = hospitalService.getPatientById(patient_id);
                         PrintPatient(patient);
                     }
                     else
@@ -63,7 +63,7 @@ class Program
                         if (existingPatient != null)
                         {
                             Patient updatedPatient = ReadPatientDetailsFromUser();
-                            updatedPatient.patientId = existingPatient.patientId;
+                            updatedPatient.patient_id = existingPatient.patient_id;
                             hospitalService.updatePatient(updatedPatient);
                             Console.WriteLine("Patient updated successfully.");
                         }
@@ -93,9 +93,9 @@ class Program
 
                 case "6":
                     Console.Write("Enter appointment ID: ");
-                    if (int.TryParse(Console.ReadLine(), out int appointmentId))
+                    if (int.TryParse(Console.ReadLine(), out int appointment_id))
                     {
-                        Appointment appointment = hospitalService.getAppointmentById(appointmentId);
+                        Appointment appointment = hospitalService.getAppointmentById(appointment_id);
                         PrintAppointment(appointment);
                     }
                     else
@@ -144,7 +144,7 @@ class Program
                         if (existingAppointment != null)
                         {
                             Appointment updatedAppointment = ReadAppointmentDetailsFromUser();
-                            updatedAppointment.appointmentId = existingAppointment.appointmentId;
+                            updatedAppointment.appointment_id = existingAppointment.appointment_id;
                             hospitalService.updateAppointment(updatedAppointment);
                             Console.WriteLine("Appointment updated successfully.");
                         }
@@ -191,12 +191,12 @@ class Program
     {
         if (patient != null)
         {
-            Console.WriteLine($"Patient ID: {patient.patientId}");
-            Console.WriteLine($"First Name: {patient.firstName}");
-            Console.WriteLine($"Last Name: {patient.lastName}");
-            Console.WriteLine($"Date of Birth: {patient.dateOfBirth.ToShortDateString()}");
+            Console.WriteLine($"Patient ID: {patient.patient_id}");
+            Console.WriteLine($"First Name: {patient.first_name}");
+            Console.WriteLine($"Last Name: {patient.last_name}");
+            Console.WriteLine($"Date of Birth: {patient.date_of_birth.ToShortDateString()}");
             Console.WriteLine($"Gender: {patient.gender}");
-            Console.WriteLine($"Contact Number: {patient.contactNumber}");
+            Console.WriteLine($"Contact Number: {patient.contact_number}");
             Console.WriteLine($"Address: {patient.address}");
         }
         else
@@ -226,15 +226,15 @@ class Program
         Patient patient = new Patient();
 
         Console.Write("Enter First Name: ");
-        patient.firstName = Console.ReadLine();
+        patient.first_name = Console.ReadLine();
 
         Console.Write("Enter Last Name: ");
-        patient.lastName = Console.ReadLine();
+        patient.last_name = Console.ReadLine();
 
         Console.Write("Enter Date of Birth (yyyy-MM-dd): ");
         if (DateTime.TryParse(Console.ReadLine(), out DateTime dateOfBirth))
         {
-            patient.dateOfBirth = dateOfBirth;
+            patient.date_of_birth = dateOfBirth;
         }
         else
         {
@@ -245,7 +245,7 @@ class Program
         patient.gender = Console.ReadLine();
 
         Console.Write("Enter Contact Number: ");
-        patient.contactNumber = Console.ReadLine();
+        patient.contact_number = Console.ReadLine();
 
         Console.Write("Enter Address: ");
         patient.address = Console.ReadLine();
@@ -257,10 +257,10 @@ class Program
     {
         if (appointment != null)
         {
-            Console.WriteLine($"Appointment ID: {appointment.appointmentId}");
-            Console.WriteLine($"Patient ID: {appointment.patientId}");
-            Console.WriteLine($"Doctor ID: {appointment.doctorId}");
-            Console.WriteLine($"Appointment Date: {appointment.appointmentDate}");
+            Console.WriteLine($"Appointment ID: {appointment.appointment_id}");
+            Console.WriteLine($"Patient ID: {appointment.patient_id}");
+            Console.WriteLine($"Doctor ID: {appointment.doctor_id}");
+            Console.WriteLine($"Appointment Date: {appointment.appointment_date}");
             Console.WriteLine($"Description: {appointment.description}");
         }
         else
@@ -292,7 +292,7 @@ class Program
         Console.Write("Enter Patient ID: ");
         if (int.TryParse(Console.ReadLine(), out int patientId))
         {
-            appointment.patientId = patientId;
+            appointment.patient_id = patientId;
         }
         else
         {
@@ -300,9 +300,9 @@ class Program
         }
 
         Console.Write("Enter Doctor ID: ");
-        if (int.TryParse(Console.ReadLine(), out int doctorId))
+        if (int.TryParse(Console.ReadLine(), out int doctor_id))
         {
-            appointment.doctorId = doctorId;
+            appointment.doctor_id = doctor_id;
         }
         else
         {
@@ -310,9 +310,9 @@ class Program
         }
 
         Console.Write("Enter Appointment Date (yyyy-MM-dd HH:mm): ");
-        if (DateTime.TryParse(Console.ReadLine(), out DateTime appointmentDate))
+        if (DateTime.TryParse(Console.ReadLine(), out DateTime appointment_date))
         {
-            appointment.appointmentDate = appointmentDate;
+            appointment.appointment_date = appointment_date;
         }
         else
         {

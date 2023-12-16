@@ -8,33 +8,33 @@ namespace Hospital_Management.entity
 {
     public class Billing
     {
-        private int billId { get; set; }
-        private int patientId { get; set; }
-        private int doctorId { get; set; }
-        private int appointmentId { get; set; }
-        private DateTime billDate { get; set; }
+        private int bill_id { get; set; }
+        private int patient_id { get; set; }
+        private int doctor_id { get; set; }
+        private int appointment_id { get; set; }
+        private DateTime bill_date { get; set; }
         private decimal amount { get; set; }
-        private string paymentStatus { get; set; }
+        private string payment_status { get; set; }
 
         // Default constructor
         public Billing() { }
 
         // Parameterized constructor
-        public Billing(int billId, int patientId, int doctorId, int appointmentId, DateTime billDate, decimal amount, string paymentStatus)
+        public Billing(int bill_id, int patient_id, int doctor_id, int appointment_id, DateTime bill_date, decimal amount, string payment_status)
         {
-            this.billId = billId;
-            this.patientId = patientId;
-            this.doctorId = doctorId;
-            this.appointmentId = appointmentId;
-            this.billDate = billDate;
+            this.bill_id = bill_id;
+            this.patient_id = patient_id;
+            this.doctor_id = doctor_id;
+            this.appointment_id = appointment_id;
+            this.bill_date = bill_date;
             this.amount = amount;
-            this.paymentStatus = paymentStatus;
+            this.payment_status = payment_status;
         }
 
         public override string ToString()
         {
             // Override the ToString method for a custom string representation of the object.
-            return $"Bill ID: {billId}, Patient ID: {patientId}, Doctor ID: {doctorId}, Appointment ID: {appointmentId}, Date: {billDate}, Amount: {amount}, Payment Status: {paymentStatus}";
+            return $"Bill ID: {bill_id}, Patient ID: {patient_id}, Doctor ID: {doctor_id}, Appointment ID: {appointment_id}, Date: {bill_date}, Amount: {amount}, Payment Status: {payment_status}";
         }
 
     }

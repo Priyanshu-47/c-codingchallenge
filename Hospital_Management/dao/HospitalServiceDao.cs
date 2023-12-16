@@ -10,78 +10,54 @@ using Hospital_Management.myexception;
 
 namespace Hospital_Management.dao
 {
-    internal class HospitalServiceDao : IHospitalService
+    public class HospitalServiceDao : IHospitalService
     {
-        public List<Patient> patient;
 
         public string connectionString;
         SqlCommand cmd = null;
 
         public HospitalServiceDao()
         {
-            patient = new List<Patient>();
             connectionString = DBConnection.GetConnectionString();
             cmd = new SqlCommand();
         }
-
-        public HospitalServiceDao(string connectionString)
-        {
-            this.connectionString = connectionString;
-        }
-
-        public Patient getPatientById(int patientId)
+        public Patient getPatientById(int patient_id)
         {
             Patient patient = null;
-            try
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
+                connection.Open();
 
-
-                using (SqlConnection connection = new SqlConnection(connectionString))
+                string query = "SELECT * FROM Patients WHERE patient_id = @patient_id";
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    
-                    connection.Open();
+                    command.Parameters.AddWithValue("@patient_id", patient_id);
 
-                    string query = "SELECT * FROM Patients WHERE patient_id = @PatientId";
-                    using (SqlCommand command = new SqlCommand(query, connection))
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        command.Parameters.AddWithValue("@PatientId", patientId);
-
-                        using (SqlDataReader reader = command.ExecuteReader())
+                        if (reader.Read())
                         {
-                            if (reader.Read())
+                            patient = new Patient
                             {
-                                patient = new Patient
-                                {
-                                    patientId = Convert.ToInt32(reader["patientId"]),
-                                    firstName = reader["firstName"].ToString(),
-                                    lastName = reader["lastName"].ToString(),
-                                    dateOfBirth = Convert.ToDateTime(reader["dateOfBirth"]),
-                                    gender = reader["gender"].ToString(),
-                                    contactNumber = reader["contactNumber"].ToString(),
-                                    address = reader["address"].ToString(),
-                                };
-                            }
-                            else
-                            {
+                                patient_id = (int)reader["patient_id"],
+                                first_name = reader["first_name"].ToString(),
+                                last_name = reader["last_name"].ToString(),
+                                date_of_birth = Convert.ToDateTime(reader["date_of_birth"]),
+                                gender = reader["gender"].ToString(),
+                                contact_number = reader["contact_number"].ToString(),
+                                address = reader["address"].ToString()
+                            };
+                        }
+                        else
+                        {
 
-                                throw new PatientNumberNotFoundException($"Patient with ID {patientId} not found.");
-                            }
+                            throw new PatientNumberNotFoundException($"Patient with ID {patient_id} not found.");
                         }
                     }
                 }
             }
-            catch (SqlException ex)
-            {
-                // Log the exception or handle it as needed
-                Console.WriteLine($"An SQL exception occurred: {ex.Message}");
-                throw; // Re-throw the exception to maintain the original exception details
-            }
-            catch (Exception ex)
-            {
-                // Handle other exceptions
-                Console.WriteLine($"An exception occurred: {ex.Message}");
-                throw;
-            }
+
             return patient;
         }
 
@@ -135,14 +111,12 @@ namespace Hospital_Management.dao
         {
             List<Patient> patients = new List<Patient>();
 
-            using (SqlConnection sqlconnection = new SqlConnection(connectionString))
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                cmd.Connection = sqlconnection;
-
-                sqlconnection.Open();
+                connection.Open();
 
                 string query = "SELECT * FROM Patients";
-                using (SqlCommand command = new SqlCommand(query, sqlconnection))
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -150,12 +124,12 @@ namespace Hospital_Management.dao
                         {
                             Patient patient = new Patient
                             {
-                                patientId = (int)reader["patient_id"],
-                                firstName = reader["first_name"].ToString(),
-                                lastName = reader["last_name"].ToString(),
-                                dateOfBirth = Convert.ToDateTime(reader["date_of_birth"]),
+                                patient_id = (int)reader["patient_id"],
+                                first_name = reader["first_name"].ToString(),
+                                last_name = reader["last_name"].ToString(),
+                                date_of_birth = Convert.ToDateTime(reader["date_of_birth"]),
                                 gender = reader["gender"].ToString(),
-                                contactNumber = reader["contact_number"].ToString(),
+                                contact_number = reader["contact_number"].ToString(),
                                 address = reader["address"].ToString()
                             };
 
@@ -174,15 +148,15 @@ namespace Hospital_Management.dao
             {
                 cmd.Connection = sqlconnection;
                 sqlconnection.Open();
-                SqlCommand command = new SqlCommand("INSERT INTO Patients (FirstName, LastName, DateOfBirth, Gender, ContactNumber, Address) " +
-                                                    "VALUES (@FirstName, @LastName, @DateOfBirth, @Gender, @ContactNumber, @Address)", sqlconnection);
+                SqlCommand command = new SqlCommand("INSERT INTO Patients (first_name, last_name, date_of_birth, gender, contact_number, address) " +
+                                                    "VALUES (@first_name, @last_name, @date_of_birth, @gender, @contact_number, @address)", sqlconnection);
 
-                command.Parameters.AddWithValue("@FirstName", patient.firstName);
-                command.Parameters.AddWithValue("@LastName", patient.lastName);
-                command.Parameters.AddWithValue("@DateOfBirth", patient.dateOfBirth);
-                command.Parameters.AddWithValue("@Gender", patient.gender);
-                command.Parameters.AddWithValue("@ContactNumber", patient.contactNumber);
-                command.Parameters.AddWithValue("@Address", patient.address);
+                command.Parameters.AddWithValue("@first_name", patient.first_name);
+                command.Parameters.AddWithValue("@last_name", patient.last_name);
+                command.Parameters.AddWithValue("@date_of_birth", patient.date_of_birth);
+                command.Parameters.AddWithValue("@gender", patient.gender);
+                command.Parameters.AddWithValue("@contact_number", patient.contact_number);
+                command.Parameters.AddWithValue("@address", patient.address);
 
                 command.ExecuteNonQuery();
             }
@@ -194,30 +168,30 @@ namespace Hospital_Management.dao
             {
                 cmd.Connection = sqlconnection;
                 sqlconnection.Open();
-                SqlCommand command = new SqlCommand("UPDATE Patients SET FirstName = @FirstName, LastName = @LastName, " +
-                                                    "DateOfBirth = @DateOfBirth, Gender = @Gender, ContactNumber = @ContactNumber, Address = @Address " +
-                                                    "WHERE PatientId = @PatientId", sqlconnection);
+                SqlCommand command = new SqlCommand("UPDATE Patients SET first_name = @first_name, last_name = @last_name, " +
+                                                    "date_of_birth = @date_of_birth, gender = @gender, contact_number = @contact_number, address = @address " +
+                                                    "WHERE patient_id = @patient_id", sqlconnection);
 
-                command.Parameters.AddWithValue("@FirstName", patient.firstName);
-                command.Parameters.AddWithValue("@LastName", patient.lastName);
-                command.Parameters.AddWithValue("@DateOfBirth", patient.dateOfBirth);
-                command.Parameters.AddWithValue("@Gender", patient.gender);
-                command.Parameters.AddWithValue("@ContactNumber", patient.contactNumber);
-                command.Parameters.AddWithValue("@Address", patient.address);
-                command.Parameters.AddWithValue("@PatientId", patient.patientId);
+                command.Parameters.AddWithValue("@first_name", patient.first_name);
+                command.Parameters.AddWithValue("@last_name", patient.last_name);
+                command.Parameters.AddWithValue("@date_of_birth", patient.date_of_birth);
+                command.Parameters.AddWithValue("@gender", patient.gender);
+                command.Parameters.AddWithValue("@contact_number", patient.contact_number);
+                command.Parameters.AddWithValue("@address", patient.address);
+                command.Parameters.AddWithValue("@patient_id", patient.patient_id);
 
                 command.ExecuteNonQuery();
             }
         }
 
-        public void deletePatient(int patientId)
+        public void deletePatient(int patient_id)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 cmd.Connection = connection;
                 connection.Open();
-                SqlCommand command = new SqlCommand("DELETE FROM Patients WHERE PatientId = @PatientId", connection);
-                command.Parameters.AddWithValue("@PatientId", patientId);
+                SqlCommand command = new SqlCommand("DELETE FROM Patients WHERE patient_id = @patient_id", connection);
+                command.Parameters.AddWithValue("@patient_id", patient_id);
 
                 command.ExecuteNonQuery();
             }
@@ -225,17 +199,17 @@ namespace Hospital_Management.dao
 
         // Appointment-related operations
 
-        public Appointment getAppointmentById(int appointmentId)
+        public Appointment getAppointmentById(int appointment_id)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 cmd.Connection = connection;
                 connection.Open();
 
-                string query = "SELECT * FROM Appointments WHERE AppointmentId = @AppointmentId";
+                string query = "SELECT * FROM Appointments WHERE appointment_id = @appointment_id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@AppointmentId", appointmentId);
+                    command.Parameters.AddWithValue("@appointment_id", appointment_id);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -244,12 +218,12 @@ namespace Hospital_Management.dao
                             // Map data from SqlDataReader to Appointment object
                             Appointment appointment = new Appointment
                             {
-                                appointmentId = reader.GetInt32(reader.GetOrdinal("AppointmentId")),
-                                patientId = reader.GetInt32(reader.GetOrdinal("PatientId")),
-                                doctorId = reader.GetInt32(reader.GetOrdinal("DoctorId")),
-                                appointmentDate = reader.GetDateTime(reader.GetOrdinal("AppointmentDate")),
-                                description = reader.GetString(reader.GetOrdinal("Description")),
-                                // Map other properties
+                                appointment_id = reader.GetInt32(reader.GetOrdinal("appointment_id")),
+                                patient_id = reader.GetInt32(reader.GetOrdinal("patient_id")),
+                                doctor_id = reader.GetInt32(reader.GetOrdinal("doctor_id")),
+                                appointment_date = reader.GetDateTime(reader.GetOrdinal("appointment_date")),
+                                description = reader.GetString(reader.GetOrdinal("description")),
+
                             };
 
                             return appointment;
@@ -261,7 +235,7 @@ namespace Hospital_Management.dao
             return null;
         }
 
-        public List<Appointment> getAppointmentsForPatient(int patientId)
+        public List<Appointment> getAppointmentsForPatient(int patient_id)
         {
             List<Appointment> appointments = new List<Appointment>();
 
@@ -270,10 +244,10 @@ namespace Hospital_Management.dao
                 cmd.Connection = connection;
                 connection.Open();
 
-                string query = "SELECT * FROM Appointments WHERE PatientId = @PatientId";
+                string query = "SELECT * FROM Appointments WHERE Patient_id = @patient_id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@PatientId", patientId);
+                    command.Parameters.AddWithValue("@patient_id", patient_id);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -282,11 +256,11 @@ namespace Hospital_Management.dao
                             // Map data from SqlDataReader to Appointment object
                             Appointment appointment = new Appointment
                             {
-                                appointmentId = reader.GetInt32(reader.GetOrdinal("AppointmentId")),
-                                patientId = reader.GetInt32(reader.GetOrdinal("PatientId")),
-                                doctorId = reader.GetInt32(reader.GetOrdinal("DoctorId")),
-                                appointmentDate = reader.GetDateTime(reader.GetOrdinal("AppointmentDate")),
-                                description = reader.GetString(reader.GetOrdinal("Description")),
+                                appointment_id = reader.GetInt32(reader.GetOrdinal("appointment_id")),
+                                patient_id = reader.GetInt32(reader.GetOrdinal("Patient_id")),
+                                doctor_id = reader.GetInt32(reader.GetOrdinal("doctor_id")),
+                                appointment_date = reader.GetDateTime(reader.GetOrdinal("appointment_date")),
+                                description = reader.GetString(reader.GetOrdinal("sescription")),
                                 // Map other properties
                             };
 
@@ -299,7 +273,7 @@ namespace Hospital_Management.dao
             return appointments;
         }
 
-        public List<Appointment> getAppointmentsForDoctor(int doctorId)
+        public List<Appointment> getAppointmentsForDoctor(int doctor_id)
         {
             List<Appointment> appointments = new List<Appointment>();
 
@@ -308,10 +282,10 @@ namespace Hospital_Management.dao
                 cmd.Connection = connection;
                 connection.Open();
 
-                string query = "SELECT * FROM Appointments WHERE DoctorId = @DoctorId";
+                string query = "SELECT * FROM Appointments WHERE doctor_id = @doctor_id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    command.Parameters.AddWithValue("@DoctorId", doctorId);
+                    command.Parameters.AddWithValue("@doctor_id", doctor_id);
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
@@ -320,11 +294,11 @@ namespace Hospital_Management.dao
                             // Map data from SqlDataReader to Appointment object
                             Appointment appointment = new Appointment
                             {
-                                appointmentId = reader.GetInt32(reader.GetOrdinal("AppointmentId")),
-                                patientId = reader.GetInt32(reader.GetOrdinal("PatientId")),
-                                doctorId = reader.GetInt32(reader.GetOrdinal("DoctorId")),
-                                appointmentDate = reader.GetDateTime(reader.GetOrdinal("AppointmentDate")),
-                                description = reader.GetString(reader.GetOrdinal("Description")),
+                                appointment_id = reader.GetInt32(reader.GetOrdinal("appointment_id")),
+                                patient_id = reader.GetInt32(reader.GetOrdinal("patient_id")),
+                                doctor_id = reader.GetInt32(reader.GetOrdinal("doctor_id")),
+                                appointment_date = reader.GetDateTime(reader.GetOrdinal("appointment_date")),
+                                description = reader.GetString(reader.GetOrdinal("description")),
                                 // Map other properties
                             };
 
@@ -344,14 +318,14 @@ namespace Hospital_Management.dao
                 cmd.Connection = connection;
                 connection.Open();
 
-                string query = "INSERT INTO Appointments (PatientId, DoctorId, AppointmentDate, Description) VALUES (@PatientId, @DoctorId, @AppointmentDate, @Description)";
+                string query = "INSERT INTO Appointments (patient_id, doctor_id, appointment_date, description) VALUES (@patient_id, @doctor_id, @appointment_date, @description)";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     // Add parameters and set values
-                    command.Parameters.AddWithValue("@PatientId", appointment.patientId);
-                    command.Parameters.AddWithValue("@DoctorId", appointment.doctorId);
-                    command.Parameters.AddWithValue("@AppointmentDate", appointment.appointmentDate);
-                    command.Parameters.AddWithValue("@Description", appointment.description);
+                    command.Parameters.AddWithValue("@patient_id", appointment.patient_id);
+                    command.Parameters.AddWithValue("@doctor_id", appointment.doctor_id);
+                    command.Parameters.AddWithValue("@appointment_date", appointment.appointment_date);
+                    command.Parameters.AddWithValue("@description", appointment.description);
 
                     // Execute the query
                     command.ExecuteNonQuery();
@@ -366,15 +340,15 @@ namespace Hospital_Management.dao
                 cmd.Connection = connection;
                 connection.Open();
 
-                string query = "UPDATE Appointments SET PatientId = @PatientId, DoctorId = @DoctorId, AppointmentDate = @AppointmentDate, Description = @Description WHERE AppointmentId = @AppointmentId";
+                string query = "UPDATE Appointments SET patient_id = @patient_id, doctor_id = @doctor_id, appointment_date = @appointment_date, description = @description WHERE appointment_id = @appointment_id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     // Add parameters and set values
-                    command.Parameters.AddWithValue("@AppointmentId", appointment.appointmentId);
-                    command.Parameters.AddWithValue("@PatientId", appointment.patientId);
-                    command.Parameters.AddWithValue("@DoctorId", appointment.doctorId);
-                    command.Parameters.AddWithValue("@AppointmentDate", appointment.appointmentDate);
-                    command.Parameters.AddWithValue("@Description", appointment.description);
+                    command.Parameters.AddWithValue("@appointment_id", appointment.appointment_id);
+                    command.Parameters.AddWithValue("@patient_id", appointment.patient_id);
+                    command.Parameters.AddWithValue("@doctor_id", appointment.doctor_id);
+                    command.Parameters.AddWithValue("@appointment_date", appointment.appointment_date);
+                    command.Parameters.AddWithValue("@description", appointment.description);
 
                     // Execute the query
                     command.ExecuteNonQuery();
@@ -382,18 +356,18 @@ namespace Hospital_Management.dao
             }
         }
 
-        public void cancelAppointment(int appointmentId)
+        public void cancelAppointment(int appointment_id)
         {
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 cmd.Connection = connection;
                 connection.Open();
 
-                string query = "DELETE FROM Appointments WHERE AppointmentId = @AppointmentId";
+                string query = "DELETE FROM Appointments WHERE appointment_id = @appointment_id";
                 using (SqlCommand command = new SqlCommand(query, connection))
                 {
                     // Add parameters and set values
-                    command.Parameters.AddWithValue("@AppointmentId", appointmentId);
+                    command.Parameters.AddWithValue("@appointment_id", appointment_id);
 
                     // Execute the query
                     command.ExecuteNonQuery();
